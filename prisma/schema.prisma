@@ -29,14 +29,16 @@ model Instrutor {
 }
 
 model Treino {
-  id            Int       @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   descricao     String
   dataInicio    DateTime
-  ativo         Boolean   @default(true)
-  aluno         Aluno     @relation(fields: [alunoId], references: [id])
+  ativo         Boolean         @default(true)
+  aluno         Aluno           @relation(fields: [alunoId], references: [id])
   alunoId       Int
   exercicios    TreinoExercicio[]
+  propostas     Proposta[]      // 👈 relação inversa
 }
+
 
 model Exercicio {
   id             Int       @id @default(autoincrement())
@@ -64,17 +66,20 @@ model TreinoExercicio {
   repeticoes    Int
   carga         Float?
 }
+
 model Usuario {
-  id            String       @db.VarChar(36) @id @default(uuid())
-  nome          String       @db.VarChar(50)
-  email         String       @db.VarChar(100) @unique()
-  senha         String       @db.VarChar(60)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  alunos        Aluno[]
-  logs          Log[]
-  perguntaSecreta String? @db.VarChar(100)
-  respostaSecreta String? @db.VarChar(200)
+  id              String       @db.VarChar(36) @id @default(uuid())
+  nome            String       @db.VarChar(50)
+  email           String       @db.VarChar(100) @unique()
+  senha           String       @db.VarChar(60)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  alunos          Aluno[]
+  logs            Log[]
+  propostas       Proposta[]   // 👈 relação inversa
+  perguntaSecreta String?      @db.VarChar(100)
+  respostaSecreta String?      @db.VarChar(200)
+
   @@map("usuarios")
 }
 
@@ -88,3 +93,26 @@ model Log {
   updatedAt     DateTime    @updatedAt
   @@map("logs")
 }
+model Proposta {
+  id          Int       @id @default(autoincrement())
+
+  // Relacionamento com Usuario (equivalente a Cliente)
+  usuario     Usuario   @relation(fields: [usuarioId], references: [id])
+  usuarioId   String    @db.VarChar(36)
+
+  // Relacionamento com Treino (equivalente a Carro)
+  treino      Treino    @relation(fields: [treinoId], references: [id])
+  treinoId    Int
+
+  // Campos adicionais
+  descricao   String    @db.VarChar(255)
+  resposta    String?   @db.VarChar(255)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("propostas")
+}
+
+
+

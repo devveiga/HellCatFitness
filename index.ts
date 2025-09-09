@@ -1,5 +1,5 @@
 import express from 'express'
-import routesAlunos from './routes/alunos'
+import routesProposta from './routes/proposta'
 import routesInstrutores from './routes/instrutores'
 import routesExercicios from './routes/exercicios'
 import routesTreinos from './routes/treinos'
@@ -16,7 +16,6 @@ const port = 3000
 
 app.use(express.json())
 
-app.use("/alunos", routesAlunos)
 app.use("/instrutores", routesInstrutores)
 app.use("/exercicios", routesExercicios)
 app.use("/treinos", routesTreinos)
@@ -24,6 +23,7 @@ app.use("/treinoexercicios", routesTreinoexercicios)
 app.use("/usuarios", routesUsuarios)
 app.use("/login", routesLogin)
 app.use("/seguranca", routesSeguranca)
+app.use("/proposta", routesProposta)
 
 app.use
 
