@@ -7,25 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Aluno {
-  id           Int       @id @default(autoincrement())
-  nome         String
-  idade        Int
-  email        String
-  telefone     String?
-  dataCadastro DateTime?
-  instrutor    Instrutor? @relation(fields: [instrutorId], references: [id])
-  instrutorId  Int?
-  treinos      Treino[]
-  usuario      Usuario     @relation(fields: [usuarioId], references: [id])
-  usuarioId    String      @db.VarChar(36)
-  @@map("alunos")
-}
 
 model Instrutor {
   id     Int     @id @default(autoincrement())
   nome   String
-  alunos Aluno[]
+  email           String       @db.VarChar(100) @unique()
 }
 
 model Treino {
@@ -33,10 +19,10 @@ model Treino {
   descricao     String
   dataInicio    DateTime
   ativo         Boolean         @default(true)
-  aluno         Aluno           @relation(fields: [alunoId], references: [id])
-  alunoId       Int
   exercicios    TreinoExercicio[]
-  propostas     Proposta[]      // 👈 relação inversa
+  propostas     Proposta[]
+  usuario       Usuario         @relation(fields: [usuarioId], references: [id])
+  usuarioId     String          @db.VarChar(36)
 }
 
 
@@ -74,12 +60,11 @@ model Usuario {
   senha           String       @db.VarChar(60)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
-  alunos          Aluno[]
   logs            Log[]
-  propostas       Proposta[]   // 👈 relação inversa
+  propostas       Proposta[]   
   perguntaSecreta String?      @db.VarChar(100)
   respostaSecreta String?      @db.VarChar(200)
-
+  treinos         Treino[]     
   @@map("usuarios")
 }
 
@@ -96,11 +81,9 @@ model Log {
 model Proposta {
   id          Int       @id @default(autoincrement())
 
-  // Relacionamento com Usuario (equivalente a Cliente)
   usuario     Usuario   @relation(fields: [usuarioId], references: [id])
   usuarioId   String    @db.VarChar(36)
 
-  // Relacionamento com Treino (equivalente a Carro)
   treino      Treino    @relation(fields: [treinoId], references: [id])
   treinoId    Int
 

@@ -20,23 +20,24 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const instrutorSchema = z.object({
-    nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
-  
+      nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
+      email: z.string().email("E-mail inválido")
   })
   const valida = instrutorSchema.safeParse(req.body);
   if (!valida.success) {
     res.status(400).json({ erro: valida.error });
     return;
   }
-  const {nome } = valida.data;
+    const { nome, email } = valida.data;
 
   try {
-    const instrutores = await prisma.instrutor.create({
+      const instrutor = await prisma.instrutor.create({
       data: {
-        nome  
+          nome,
+          email
       }
     });
-    res.status(201).json(instrutores);
+      res.status(201).json(instrutor);
   } catch (error) {
     res.status(400).json({ error });
   }
@@ -59,19 +60,22 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params
   const instrutorSchema = z.object({
     nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
+    email: z.string().email("E-mail inválido")
   })
   const valida = instrutorSchema.safeParse(req.body);
   if (!valida.success) {
     res.status(400).json({ erro: valida.error });
     return;
   }
-  const { nome } = valida.data;
+  const { nome, email } = valida.data;
   try {
     const instrutor = await prisma.instrutor.update({
       where: { id: Number(id) },
-      data: { nome }
+      data: { 
+        nome,
+        email
+      }
     })
-    res.status(200).json(instrutor)
   } catch (error) {
     res.status(500).json({ erro: error })
   }

@@ -10,7 +10,7 @@ const router = Router()
 router.get('/backup', async (req, res) => {
   try {
     const usuarios = await prisma.usuario.findMany()
-    const alunos = await prisma.aluno.findMany()
+    const alunos = await prisma.usuario.findMany()
     const exercicios = await prisma.exercicio.findMany()
     const treinos = await prisma.treino.findMany()
     const treinoexercicios = await prisma.treinoExercicio.findMany()
@@ -52,7 +52,7 @@ router.post('/restore', async (req, res) => {
     await prisma.log.deleteMany()
     await prisma.treinoExercicio.deleteMany()
     await prisma.treino.deleteMany()
-    await prisma.aluno.deleteMany()
+    await prisma.usuario.deleteMany()
     await prisma.instrutor.deleteMany()
     await prisma.exercicio.deleteMany()
     await prisma.usuario.deleteMany()
@@ -68,7 +68,7 @@ router.post('/restore', async (req, res) => {
       await prisma.exercicio.create({ data: exercicio })
     }
     for (const aluno of dados.alunos) {
-      await prisma.aluno.create({ data: aluno })
+      await prisma.usuario.create({ data: aluno })
     }
     for (const treino of dados.treinos) {
       await prisma.treino.create({ data: treino })

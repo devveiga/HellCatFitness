@@ -1,4 +1,4 @@
-import { Aluno, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { Router } from 'express'
 import { z } from 'zod'
 import nodemailer from "nodemailer"
@@ -8,10 +8,10 @@ const prisma = new PrismaClient()
 const router = Router()
 
 const treino = z.object({
-    descricao: z.string().min(5, "A descrição do treino deve ter pelo menos 5 caracteres"),
-    dataInicio: z.string().datetime({ message: "A data de início deve ser uma data válida" }),
-    ativo: z.boolean().default(true),
-    alunoId: z.number().int(),
+  descricao: z.string().min(5, "A descrição do treino deve ter pelo menos 5 caracteres"),
+  dataInicio: z.string().datetime({ message: "A data de início deve ser uma data válida" }),
+  ativo: z.boolean().default(true),
+  usuarioId: z.string().uuid({ message: "O ID do usuário deve ser um UUID válido" }),
     exercicios: z
         .array(
             z.object({
@@ -39,18 +39,17 @@ router.post("/", async (req, res) => {
       return;
     }
   
-    const { descricao, dataInicio, ativo, alunoId, exercicios } = valida.data;
+  const { descricao, dataInicio, ativo, usuarioId, exercicios } = valida.data;
   
     try {
       const novoTreino = await prisma.$transaction(async (tx) => {
       
         const treinoCriado = await tx.treino.create({
           data: {
-        
             descricao,
             dataInicio,
             ativo,
-            alunoId
+            usuarioId
           }
         });
   
@@ -113,14 +112,14 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ erro: valida.error });
     }
   
-    const { descricao, dataInicio, ativo, alunoId, exercicios } = valida.data;
+  const { descricao, dataInicio, ativo, usuarioId, exercicios } = valida.data;
   
     try {
       const treinoAtualizado = await prisma.$transaction(async (tx) => {
         
         const atualizado = await tx.treino.update({
           where: { id: Number(id) },
-          data: { descricao, dataInicio, ativo, alunoId },
+          data: { descricao, dataInicio, ativo, usuarioId },
         });
   
        
