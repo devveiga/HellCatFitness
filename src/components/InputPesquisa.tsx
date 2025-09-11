@@ -1,38 +1,37 @@
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { CarroType } from "../utils/CarroType";
+import type { TreinoType } from "../utils/TreinoType";
 
-const apiUrl = import.meta.env.VITE_API_URL
+const apiUrl = import.meta.env.VITE_API_URL;
 
 type Inputs = {
-    termo: string
-}
+    termo: string;
+};
 
 type InputPesquisaProps = {
-    setCarros: React.Dispatch<React.SetStateAction<CarroType[]>>
-}
+    setCarros: React.Dispatch<React.SetStateAction<TreinoType[]>>;
+};
 
 export function InputPesquisa({ setCarros }: InputPesquisaProps) {
-    const { register, handleSubmit, reset } = useForm<Inputs>()
+    const { register, handleSubmit, reset } = useForm<Inputs>();
 
     async function enviaPesquisa(data: Inputs) {
-        // alert(data.termo)
         if (data.termo.length < 2) {
-            toast.error("Informe, no mínimo, 2 caracteres")
-            return
+            toast.error("Informe, no mínimo, 2 caracteres");
+            return;
         }
-
-        const response = await fetch(`${apiUrl}/carros/pesquisa/${data.termo}`)
-        const dados = await response.json()
-        // console.log(dados)
-        setCarros(dados)
+        // Busca todos os treinos e filtra por descrição
+        const response = await fetch(`${apiUrl}/treinos`);
+        const dados = await response.json();
+        const filtrados = dados.filter((t: any) => t.descricao.toLowerCase().includes(data.termo.toLowerCase()));
+        setCarros(filtrados);
     }
 
     async function mostraDestaques() {
-        const response = await fetch(`${apiUrl}/carros`)
-        const dados = await response.json()
-        reset({ termo: "" })
-        setCarros(dados)
+        const response = await fetch(`${apiUrl}/treinos`);
+        const dados = await response.json();
+        reset({ termo: "" });
+        setCarros(dados);
     }
 
     return (
