@@ -36,9 +36,10 @@ export const CadastroUsuarioForm: React.FC = () => {
 
     try {
       const response = await axios.post<{ nome: string }>(
-        "`${apiUrl}/login",
+        `${apiUrl}/usuarios`,
         form
       );
+      
       setMensagem(`Usuário ${response.data.nome} criado com sucesso!`);
       setForm({
         nome: "",
@@ -47,16 +48,20 @@ export const CadastroUsuarioForm: React.FC = () => {
         perguntaSecreta: "",
         respostaSecreta: "",
       });
+
+
+
     } catch (err: any) {
-      const erroBackend =
-        err.response?.data?.erro ||
-        err.response?.data?.error ||
-        "Erro desconhecido.";
+      const rawError = err.response?.data?.erro || err.response?.data?.error;
+    
+      const erroBackend = typeof rawError === "string"
+        ? rawError
+        : JSON.stringify(rawError, null, 2); // ou alguma transformação amigável
+    
       setErro(erroBackend);
-    } finally {
-      setLoading(false);
     }
-  };
+    setLoading(false);
+  };    
 
   return (
     <div className="w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 relative">
