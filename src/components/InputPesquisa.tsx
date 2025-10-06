@@ -9,10 +9,17 @@ type Inputs = {
 };
 
 type InputPesquisaProps = {
+<<<<<<< HEAD
     setCarros: React.Dispatch<React.SetStateAction<TreinoType[]>>;
 };
 
 export function InputPesquisa({ setCarros }: InputPesquisaProps) {
+=======
+    setTreinos: React.Dispatch<React.SetStateAction<TreinoType[]>>;
+};
+
+export function InputPesquisa({ setTreinos }: InputPesquisaProps) {
+>>>>>>> master
     const { register, handleSubmit, reset } = useForm<Inputs>();
 
     async function enviaPesquisa(data: Inputs) {
@@ -24,14 +31,22 @@ export function InputPesquisa({ setCarros }: InputPesquisaProps) {
         const response = await fetch(`${apiUrl}/treinos`);
         const dados = await response.json();
         const filtrados = dados.filter((t: any) => t.descricao.toLowerCase().includes(data.termo.toLowerCase()));
+<<<<<<< HEAD
         setCarros(filtrados);
+=======
+        setTreinos(filtrados);
+>>>>>>> master
     }
 
     async function mostraDestaques() {
         const response = await fetch(`${apiUrl}/treinos`);
         const dados = await response.json();
         reset({ termo: "" });
+<<<<<<< HEAD
         setCarros(dados);
+=======
+        setTreinos(dados);
+>>>>>>> master
     }
 
     return (

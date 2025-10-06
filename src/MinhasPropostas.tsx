@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { useClienteStore } from "./context/ClienteContext";
+=======
+import { useUsuarioStore } from "./context/UsuarioContext";
+>>>>>>> master
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Propostas() {
     const [propostas, setPropostas] = useState<any[]>([]);
+<<<<<<< HEAD
     const { cliente } = useClienteStore();
 
     useEffect(() => {
@@ -15,6 +20,47 @@ export default function Propostas() {
         }
         buscaDados();
     }, []);
+=======
+    const [treinoId, setTreinoId] = useState<number>(0);
+    const [descricao, setDescricao] = useState<string>("");
+    const [loading, setLoading] = useState(false);
+    const { usuario } = useUsuarioStore();
+
+    useEffect(() => {
+        async function buscaDados() {
+            const response = await fetch(`${apiUrl}/proposta`);
+            const dados = await response.json();
+            // Filtra só as propostas do usuário logado
+            setPropostas(dados.filter((p: any) => p.usuarioId === usuario.id));
+        }
+        buscaDados();
+    }, [usuario.id]);
+
+    async function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        setLoading(true);
+        const response = await fetch(`${apiUrl}/proposta`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                usuarioId: usuario.id,
+                treinoId: Number(treinoId),
+                descricao
+            })
+        });
+        setLoading(false);
+        if (response.status === 201) {
+            const nova = await response.json();
+            setPropostas((prev) => [...prev, nova]);
+            setTreinoId(0);
+            setDescricao("");
+            alert("Proposta enviada!");
+        } else {
+            const erro = await response.json();
+            alert(erro.erro?.message || "Erro ao criar proposta");
+        }
+    }
+>>>>>>> master
 
     function dataDMA(data: string) {
         const ano = data.substring(0, 4);
@@ -53,7 +99,38 @@ export default function Propostas() {
     return (
         <section className="max-w-7xl mx-auto">
             <h1 className="mb-6 mt-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
+<<<<<<< HEAD
                 Listagem de <span className="underline underline-offset-3 decoration-8 decoration-orange-400 dark:decoration-orange-600">Minhas Propostas</span></h1>
+=======
+                Listagem de <span className="underline underline-offset-3 decoration-8 decoration-orange-400 dark:decoration-orange-600">Minhas Propostas</span>
+            </h1>
+
+            <form onSubmit={handleSubmit} className="mb-8 flex flex-col gap-4 max-w-lg">
+                <input
+                    type="number"
+                    placeholder="ID do Treino"
+                    value={treinoId || ""}
+                    onChange={e => setTreinoId(Number(e.target.value))}
+                    className="p-2 border rounded"
+                    required
+                />
+                <textarea
+                    placeholder="Descrição da proposta (mínimo 10 caracteres)"
+                    value={descricao}
+                    onChange={e => setDescricao(e.target.value)}
+                    minLength={10}
+                    className="p-2 border rounded"
+                    required
+                />
+                <button
+                    type="submit"
+                    className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
+                    disabled={loading}
+                >
+                    {loading ? "Enviando..." : "Enviar Proposta"}
+                </button>
+            </form>
+>>>>>>> master
 
             {propostas.length === 0 ? (
                 <h2 className="mb-4 mt-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">
@@ -74,4 +151,8 @@ export default function Propostas() {
             )}
         </section>
     );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

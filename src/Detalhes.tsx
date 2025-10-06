@@ -1,7 +1,11 @@
 
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { useClienteStore } from "./context/ClienteContext";
+=======
+import { useUsuarioStore } from "./context/UsuarioContext";
+>>>>>>> master
 import { useForm } from "react-hook-form";
 import { toast } from 'sonner';
 
@@ -14,7 +18,11 @@ type Inputs = {
 export default function Detalhes() {
   const params = useParams();
   const [treino, setTreino] = useState<any>();
+<<<<<<< HEAD
   const { cliente } = useClienteStore();
+=======
+  const { usuario } = useUsuarioStore();
+>>>>>>> master
   const { register, handleSubmit, reset } = useForm<Inputs>();
 
   useEffect(() => {
@@ -27,7 +35,11 @@ export default function Detalhes() {
   }, [params.id]);
 
   async function enviaProposta(data: Inputs) {
+<<<<<<< HEAD
     if (!cliente?.id) {
+=======
+    if (!usuario?.id) {
+>>>>>>> master
       toast.error("Você precisa estar logado para enviar uma proposta.");
       return;
     }
@@ -37,7 +49,11 @@ export default function Detalhes() {
       },
       method: "POST",
       body: JSON.stringify({
+<<<<<<< HEAD
         usuarioId: cliente.id,
+=======
+        usuarioId: usuario.id,
+>>>>>>> master
         treinoId: treino.id,
         descricao: data.descricao
       })
@@ -73,13 +89,21 @@ export default function Detalhes() {
             )) : <li>Nenhum exercício cadastrado.</li>}
           </ul>
         </div>
+<<<<<<< HEAD
         {cliente?.id ? (
+=======
+        {usuario?.id ? (
+>>>>>>> master
           <>
             <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
               Envie uma proposta para realizar este treino com o instrutor:
             </h3>
             <form onSubmit={handleSubmit(enviaProposta)}>
+<<<<<<< HEAD
               <input type="text" className="mb-2 mt-4 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" value={`${cliente.nome} (${cliente.email})`} disabled readOnly />
+=======
+              <input type="text" className="mb-2 mt-4 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" value={`${usuario.nome} (${usuario.email})`} disabled readOnly />
+>>>>>>> master
               <textarea id="message" className="mb-2 block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Diga o horário que você deseja e se tem alguma dúvida..."
                 required

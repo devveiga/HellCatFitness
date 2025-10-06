@@ -2,19 +2,22 @@ import { InputPesquisa } from "./components/InputPesquisa";
 import { CardTreino } from "./components/CardTreino";
 import type { TreinoType, TreinoExercicioType } from "./utils/TreinoType";
 import { useEffect, useState } from "react";
-import { useClienteStore } from "./context/ClienteContext";
+import { useUsuarioStore } from "./context/UsuarioContext";
+
+
+
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function App() {
   const [treinos, setTreinos] = useState<TreinoType[]>([]);
-  const { logaCliente } = useClienteStore();
+  const { logaUsuario } = useUsuarioStore();
 
   useEffect(() => {
     async function buscaDados() {
       const response = await fetch(`${apiUrl}/treinos`);
       const dados = await response.json();
-
+      
       // Para cada treino, buscar os exercícios relacionados e os dados do exercício
       const treinosComExercicios = await Promise.all(
         dados.map(async (treino: any) => {
@@ -49,10 +52,12 @@ export default function App() {
     }
     buscaDados();
 
+
+    
     async function buscaCliente(id: string) {
       const response = await fetch(`${apiUrl}/clientes/${id}`);
       const dados = await response.json();
-      logaCliente(dados);
+      logaUsuario(dados);
     }
     if (localStorage.getItem("clienteKey")) {
       const idCliente = localStorage.getItem("clienteKey");
@@ -66,7 +71,7 @@ export default function App() {
 
   return (
     <>
-      <InputPesquisa setCarros={setTreinos} />
+      <InputPesquisa setTreinos={setTreinos} />
       <div className="max-w-7xl mx-auto">
         <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-gray-600 ">
           Treinos <span className="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">em destaque</span>
