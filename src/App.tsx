@@ -1,6 +1,6 @@
 import { InputPesquisa } from "./components/InputPesquisa";
 import { CardTreino } from "./components/CardTreino";
-import type { TreinoType, TreinoExercicioType } from "./utils/TreinoType";
+import type { TreinoType } from "./utils/TreinoType";
 import { useEffect, useState } from "react";
 import { useUsuarioStore } from "./context/UsuarioContext";
 
@@ -17,8 +17,7 @@ export default function App() {
     async function buscaDados() {
       const response = await fetch(`${apiUrl}/treinos`);
       const dados = await response.json();
-      
-      // Para cada treino, buscar os exercícios relacionados e os dados do exercício
+      // ...existing code...
       const treinosComExercicios = await Promise.all(
         dados.map(async (treino: any) => {
           // Buscar todos os treinoExercicios desse treino
@@ -31,7 +30,7 @@ export default function App() {
           const exercicios = await resExercicios.json();
 
           // Montar lista de exercícios com grupoMuscular e nome
-          const exerciciosDetalhados: TreinoExercicioType[] = relacionados.map((te: any) => {
+          const exerciciosDetalhados = relacionados.map((te: any) => {
             const ex = exercicios.find((e: any) => e.id === te.exercicioId);
             return {
               exercicioId: te.exercicioId,
@@ -52,16 +51,15 @@ export default function App() {
     }
     buscaDados();
 
-
-    
-    async function buscaCliente(id: string) {
-      const response = await fetch(`${apiUrl}/clientes/${id}`);
-      const dados = await response.json();
-      logaUsuario(dados);
-    }
-    if (localStorage.getItem("clienteKey")) {
-      const idCliente = localStorage.getItem("clienteKey");
-      buscaCliente(idCliente as string);
+    // Restaurar contexto do usuário do localStorage
+    const usuarioStorage = localStorage.getItem("usuarioKey");
+    if (usuarioStorage) {
+      try {
+        const usuarioDados = JSON.parse(usuarioStorage);
+        logaUsuario(usuarioDados);
+      } catch (err) {
+        console.error("Erro ao parsear usuarioKey:", err);
+      }
     }
   }, []);
 

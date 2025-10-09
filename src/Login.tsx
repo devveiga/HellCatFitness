@@ -33,11 +33,9 @@ export default function Login() {
       logaUsuario(dados);
 
       if (data.manter) {
-        localStorage.setItem("usuarioKey", dados.id);
+        localStorage.setItem("usuarioKey", JSON.stringify(dados));
       } else {
-        if (localStorage.getItem("usuarioKey")) {
-          localStorage.removeItem("usuarioKey");
-        }
+        localStorage.removeItem("usuarioKey");
       }
 
       navigate("/");

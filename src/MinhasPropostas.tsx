@@ -12,16 +12,21 @@ export default function Propostas() {
 
     useEffect(() => {
         async function buscaDados() {
+            if (!usuario || !usuario.id) return;
             const response = await fetch(`${apiUrl}/proposta`);
             const dados = await response.json();
             // Filtra só as propostas do usuário logado
             setPropostas(dados.filter((p: any) => p.usuarioId === usuario.id));
         }
         buscaDados();
-    }, [usuario.id]);
+    }, [usuario]);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (!usuario || !usuario.id) {
+            alert("Você precisa estar logado para enviar uma proposta.");
+            return;
+        }
         setLoading(true);
         const response = await fetch(`${apiUrl}/proposta`, {
             method: "POST",
