@@ -7,6 +7,8 @@ import { Request } from "express"
 
 
 
+
+
 const prisma = new PrismaClient()
 
 const router = Router()
@@ -45,7 +47,8 @@ router.post("/", async (req, res) => {
         userLogadoNome: usuario.nome
       }, process.env.JWT_SECRET || 'segredo', { expiresIn: '1h' })
       console.log('Login realizado com sucesso! Token gerado:', token)
-      res.status(200).json({ token })
+      // Retorna o token e o objeto completo do usuário
+      res.status(200).json({ token, usuario })
       return
     } else {
 
