@@ -19,7 +19,7 @@ export default function Titulo() {
     }
 
     return (
-        <nav className="border-blue-500 bg-blue-400 dark:bg-blue-800 dark:border-blue-700">
+    <nav className="border-red-500 bg-red-400 dark:bg-red-800 dark:border-red-700">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                     <img src={logo} className="h-20" alt="Logo HellCat" />
@@ -38,13 +38,13 @@ export default function Titulo() {
                         <li>
                             {usuario && usuario.id ? (
                                 <>
-                                    <span className="text-black">
+                                    <span className="text-white font-bold">
                                         {usuario.nome}
                                     </span>&nbsp;&nbsp;
                                     <Link to="/minhasPropostas" className="text-white font-bold bg-gray-600 hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-400 rounded-lg text-sm w-full sm:w-auto px-3 py-2 text-center dark:bg-gray-500 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
                                         Agendamentos
                                     </Link>&nbsp;&nbsp;
-                                    <span className="cursor-pointer font-bold text-gray-600"
+                                    <span className="cursor-pointer font-bold text-white"
                                         onClick={usuarioSair}>
                                         Sair
                                     </span>

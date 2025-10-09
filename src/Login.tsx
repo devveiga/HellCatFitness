@@ -22,20 +22,38 @@ export default function Login() {
   const [mostrarCadastro, setMostrarCadastro] = useState(false);
 
   async function verificaLogin(data: Inputs) {
+    console.log('[LOGIN] Dados enviados para API:', { email: data.email, senha: data.senha });
     const response = await fetch(`${apiUrl}/login`, {
       headers: { "Content-Type": "application/json" },
       method: "POST",
       body: JSON.stringify({ email: data.email, senha: data.senha }),
     });
 
+    console.log('[LOGIN] Status da resposta:', response.status);
+    const rawText = await response.text();
+    console.log('[LOGIN] Corpo bruto da resposta (texto):', rawText);
+    let dados: any;
+    try {
+      dados = JSON.parse(rawText);
+    } catch (err) {
+      console.error('[LOGIN] Erro ao converter resposta em JSON:', err);
+      toast.error('Erro ao interpretar resposta do servidor.');
+      return;
+    }
+    console.log('[LOGIN] JSON convertido com sucesso:', dados);
+
     if (response.status == 200) {
-      const dados = await response.json();
-      logaUsuario(dados);
+      // Se vier token e usuario, salva só usuario
+      const usuario = dados.usuario ? dados.usuario : dados;
+      logaUsuario(usuario);
+      console.log('[LOGIN] Usuário salvo no contexto:', usuario);
 
       if (data.manter) {
-        localStorage.setItem("usuarioKey", JSON.stringify(dados));
+        localStorage.setItem("usuarioKey", JSON.stringify(usuario));
+        console.log('[LOGIN] Usuário salvo no localStorage:', usuario);
       } else {
         localStorage.removeItem("usuarioKey");
+        console.log('[LOGIN] Usuário removido do localStorage');
       }
 
       navigate("/");
@@ -64,7 +82,7 @@ export default function Login() {
                 <input
                   type="email"
                   id="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500"
                   required
                   {...register("email")}
                 />
@@ -79,7 +97,7 @@ export default function Login() {
                 <input
                   type="password"
                   id="password"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500"
                   required
                   {...register("senha")}
                 />
@@ -113,7 +131,7 @@ export default function Login() {
               </div>
               <button
                 type="submit"
-                className="w-full text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="w-full text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
               >
                 Entrar
               </button>
