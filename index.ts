@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import routesProposta from './routes/proposta'
 import routesInstrutores from './routes/instrutores'
 import routesExercicios from './routes/exercicios'
@@ -14,6 +15,8 @@ dotenv.config()
 const app = express()
 const port = 3000
 
+
+app.use(cors())
 app.use(express.json())
 
 app.use("/instrutores", routesInstrutores)
