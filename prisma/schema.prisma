@@ -72,8 +72,8 @@ model Log {
   complemento   String      @db.VarChar(200)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  admin         Admin       @relation(fields: [adminId], references: [id])
-  adminId       String      @db.VarChar(36)
+  admin         Admin?       @relation(fields: [adminId], references: [id])
+  adminId       String?      @db.VarChar(36)
   @@map("logs")
 }
 model Proposta {
@@ -102,7 +102,7 @@ model Admin {
   nivel         Int      @db.SmallInt @default(2)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt  
-  carros        Treino[]
+  treinos        Treino[]
   propostas     Proposta[]
   logs          Log[]
   @@map("admins")
