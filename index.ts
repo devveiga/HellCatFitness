@@ -8,6 +8,7 @@ import routesTreinoexercicios from './routes/treinoexercicios'
 import routesUsuarios from './routes/usuarios'
 import routesLogin from './routes/login'
 import routesSeguranca from './routes/seguranca'
+import routesadminUser from './routes/adminUser'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -27,6 +28,7 @@ app.use("/usuarios", routesUsuarios)
 app.use("/login", routesLogin)
 app.use("/seguranca", routesSeguranca)
 app.use("/proposta", routesProposta)
+app.use("/adminUser", routesadminUser) 
 
 app.use
 
