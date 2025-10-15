@@ -8,7 +8,9 @@ import routesTreinoexercicios from './routes/treinoexercicios'
 import routesUsuarios from './routes/usuarios'
 import routesLogin from './routes/login'
 import routesSeguranca from './routes/seguranca'
-import routesadminUser from './routes/adminUser'
+import routesAdmins from './routes/admins'
+import routesAdminLogin from './routes/adminLogin'
+import routesDashboard from './routes/dashboard'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -28,9 +30,9 @@ app.use("/usuarios", routesUsuarios)
 app.use("/login", routesLogin)
 app.use("/seguranca", routesSeguranca)
 app.use("/proposta", routesProposta)
-app.use("/adminUser", routesadminUser) 
-
-app.use
+app.use("/admins/login", routesAdminLogin)
+app.use("/admins", routesAdmins)  
+app.use("/dashboard", routesDashboard)
 
 app.get('/', (req, res) => {
   res.send('API: Controle treinos de academia')
