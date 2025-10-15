@@ -86,8 +86,8 @@ export default function Propostas() {
 
     return (
         <section className="max-w-7xl mx-auto">
-            <h1 className="mb-6 mt-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
-                Listagem de <span className="underline underline-offset-3 decoration-8 decoration-red-400 dark:decoration-red-600">Minhas Propostas</span>
+            <h1 className="mb-6 mt-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl text-red">
+                Listagem de <span className="underline underline-offset-3 decoration-8 decoration-red-400 dark:decoration-red-700">Minhas Propostas</span>
             </h1>
 
             <form onSubmit={handleSubmit} className="mb-8 flex flex-col gap-4 max-w-lg">
@@ -109,7 +109,7 @@ export default function Propostas() {
                 />
                 <button
                     type="submit"
-                    className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-800"
                     disabled={loading}
                 >
                     {loading ? "Enviando..." : "Enviar Proposta"}
@@ -121,8 +121,8 @@ export default function Propostas() {
                    &nbsp;&nbsp; Ah... Você ainda não fez propostas de treino!
                 </h2>
             ) : (
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-red-200 dark:text-white">
+                    <thead className="text-xs text-black uppercase bg-red-200 dark:bg-red-800 dark:text-white">
                         <tr>
                             <th scope="col" className="px-6 py-3">Treino</th>
                             <th scope="col" className="px-6 py-3">Data Início</th>
