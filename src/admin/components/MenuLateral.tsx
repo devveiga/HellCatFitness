@@ -60,7 +60,7 @@ export function MenuLateral() {
 
           {/* Usuários */}
           <li>
-            <Link to="/admin/usuarios" className="flex items-center p-2" onClick={() => handleNavigate("/admin/usuarios")}>
+            <Link to="/admin/cadAdmin" className="flex items-center p-2" onClick={() => handleNavigate("/admin/cadAdmin")}>
               <FaUsers className="text-white text-2xl" />
               <span className="ms-2 mt-1 text-white">Controle de Usuários</span>
             </Link>

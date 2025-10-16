@@ -17,28 +17,31 @@ import AdminPropostas from './admin/AdminPropostas.tsx';
 import AdminCadAdmin from './admin/AdminCadAdmin.tsx';   
 import Layout from './Layout.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-
+import AdminNovoAdmin from './admin/AdminNovoAdmin.tsx'
 
 const rotas = createBrowserRouter([
 
-   {
+  // ----------------- Rota de login do admin (sem layout)
+  {
     path: "/admin/login",
-    element: <AdminLogin />,   // rota do form de login sem o Layout da Área Administrativa
+    element: <AdminLogin />,
   },
+
+  // ----------------- Rotas do admin (com layout)
   {
     path: "/admin",
     element: <AdminLayout />,  // layout principal do admin com menus e outlet
     children: [
       { index: true, element: <AdminDashboard /> },          // rota /admin
-      { path: "treinos", element: <AdminTreinos /> },          // rota /admin/carros
-      { path: "treinos/novo", element: <AdminNovoTreino /> },  // ...
-      { path: "propostas", element: <AdminPropostas /> },  // ...
-      { path: "cadAdmin", element: <AdminCadAdmin /> },
-      { path: "treinos/novos", element: <AdminNovoTreino /> },  // ...
-      // { path: "usuarios", element: </>}  // ...
+      { path: "treinos", element: <AdminTreinos /> },        // lista de treinos
+      { path: "treinos/novo", element: <AdminNovoTreino /> },// criar novo treino
+      { path: "propostas", element: <AdminPropostas /> },    // lista de propostas
+      { path: "cadAdmin", element: <AdminCadAdmin /> },      // lista/cadastro de admins
+      { path: "novoAdmin", element: <AdminNovoAdmin /> },     // criar novo admin (pode ser o mesmo AdminCadAdmin com um botão "Novo")
     ],
   },
-  
+
+  // ----------------- Rotas do site público
   {
     path: '/',
     element: <Layout />,

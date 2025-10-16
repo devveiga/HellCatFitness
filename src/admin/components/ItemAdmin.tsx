@@ -4,7 +4,7 @@ import { useAdminStore } from "../context/AdminContext"
 
 import type { AdminType } from "../../utils/AdminType"
 
-type listaCarroProps = {
+type listaTreinoProps = {
   adminLinha: AdminType;
   admins: AdminType[];
   setAdmins: React.Dispatch<React.SetStateAction<AdminType[]>>;
@@ -12,7 +12,7 @@ type listaCarroProps = {
 
 const apiUrl = import.meta.env.VITE_API_URL
 
-export default function ItemAdmin({ adminLinha, admins, setAdmins }: listaCarroProps) {
+export default function ItemAdmin({ adminLinha, admins, setAdmins }: listaTreinoProps) {
   const { admin } = useAdminStore()
 
   async function excluirAdmin() {
