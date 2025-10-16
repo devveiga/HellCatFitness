@@ -8,9 +8,7 @@ const apiUrl = import.meta.env.VITE_API_URL
 function ControlePropostas() {
   const [propostas, setPropostas] = useState<PropostaType[]>([])
   const { admin } = useAdminStore()
-
- useEffect(() => {
-  if (!admin?.token) return;
+  console.log("Renderizando ControlePropostas - admin:", admin)
 
   async function getPropostas() {
     console.log("🔄 useEffect iniciado - admin:", admin)
@@ -28,8 +26,12 @@ function ControlePropostas() {
       console.error("❌ Erro ao buscar propostas:", err)
     }
   }
-
+ useEffect(() => {
+  console.log("useEffect chamado");
+  if (!admin) return;
+  console.log("propostas antes", propostas);
   getPropostas();
+  console.log("propostas dps", propostas);
 }, [admin]);
 
   return (
