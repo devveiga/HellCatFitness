@@ -23,8 +23,8 @@ model Treino {
   propostas     Proposta[]
   admin          Admin?       @relation(fields: [adminId], references: [id])
   adminId        String?      @db.VarChar(36) 
-  usuario       Usuario         @relation(fields: [usuarioId], references: [id])
-  usuarioId     String          @db.VarChar(36)
+  usuario       Usuario?        @relation(fields: [usuarioId], references: [id])
+  usuarioId     String?        @db.VarChar(36)
 }
 
 
@@ -66,8 +66,8 @@ model Usuario {
 
 model Log {
   id            Int         @id @default(autoincrement())
-  usuario       Usuario     @relation(fields: [usuarioId], references: [id])
-  usuarioId     String      @db.VarChar(36)
+  usuario       Usuario?     @relation(fields: [usuarioId], references: [id])
+  usuarioId     String?      @db.VarChar(36)
   descricao     String      @db.VarChar(60)
   complemento   String      @db.VarChar(200)
   createdAt     DateTime    @default(now())

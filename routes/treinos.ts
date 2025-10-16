@@ -11,16 +11,16 @@ const treino = z.object({
   descricao: z.string().min(5, "A descrição do treino deve ter pelo menos 5 caracteres"),
   dataInicio: z.string().datetime({ message: "A data de início deve ser uma data válida" }),
   ativo: z.boolean().default(true),
-  usuarioId: z.string().uuid({ message: "O ID do usuário deve ser um UUID válido" }),
-    exercicios: z
-        .array(
-            z.object({
-                exercicioId: z.number().int(),
-                series: z.number().int(),
-                repeticoes: z.number().int(),
-            })
-        )
-        .optional(),
+  usuarioId: z.string().uuid({ message: "O ID do usuário deve ser um UUID válido" }).optional(),
+  exercicios: z
+    .array(
+      z.object({
+        exercicioId: z.number().int(),
+        series: z.number().int(),
+        repeticoes: z.number().int(),
+      })
+    )
+    .optional(),
 })
 
 router.get("/", async (req, res) => {
