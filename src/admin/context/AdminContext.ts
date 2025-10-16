@@ -7,8 +7,20 @@ type AdminStore = {
     deslogaAdmin: () => void
 }
 
-export const useAdminStore = create<AdminStore>((set) => ({
-    admin: {} as AdminType,
-    logaAdmin: (adminLogado) => set({admin: adminLogado}),
-    deslogaAdmin: () => set({admin: {} as AdminType})
-}))
+export const useAdminStore = create<AdminStore>((set) => {
+    // lê token do localStorage **no momento da criação do store**
+    const token = localStorage.getItem("token")
+    const adminInicial: AdminType = token ? { token } as AdminType : {} as AdminType
+
+    return {
+        admin: adminInicial,
+        logaAdmin: (adminLogado) => {
+            localStorage.setItem("token", adminLogado.token)
+            set({ admin: adminLogado })
+        },
+        deslogaAdmin: () => {
+            localStorage.removeItem("token")
+            set({ admin: {} as AdminType })
+        }
+    }
+})

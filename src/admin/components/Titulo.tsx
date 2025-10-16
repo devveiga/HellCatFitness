@@ -12,7 +12,7 @@ export function Titulo() {
         <Link to="/admin" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img src={logo} className="h-16" alt="Hellcat" />
           <span className="self-center text-3xl font-semibold whitespace-nowrap dark:text-white">
-            HellCat: Admin Area
+            HellCat: Área do Instrutor
           </span>
         </Link>
       </div>

@@ -51,56 +51,51 @@ export default function AdminLogin() {
   }
 
   return (
-    <main className="max-w-screen-xl flex flex-col items-center mx-auto p-6">
-      <img src="../../fusca.png" alt="Revenda" style={{ width: 240 }} className="d-block" />
+    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-6">
 
-      <div className="max-w-sm">
-        <h1 className="text-3xl font-bold my-8">Admin: HellCat</h1>
-        <form className="max-w-sm mx-auto" onSubmit={handleSubmit(verificaLogin)}>
-          <div className="mb-5">
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              E-mail:
-            </label>
-            <input
-              type="email"
-              id="email"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                         focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                         dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                         dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              {...register("email")}
-              required
-            />
-          </div>
-
-          <div className="mb-5">
-            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Senha:
-            </label>
-            <input
-              type="password"
-              id="password"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                         focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                         dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                         dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              {...register("senha")}
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none 
-                       focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 
-                       text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Entrar
-          </button>
-        </form>
+  <div className="max-w-sm w-full bg-gray-800 rounded-2xl shadow-xl p-8">
+    <h1 className="text-3xl font-bold mb-8 text-red-600 text-center">Admin: HellCat</h1>
+    <form className="space-y-6" onSubmit={handleSubmit(verificaLogin)}>
+      <div>
+        <label htmlFor="email" className="block mb-2 text-sm font-medium text-red-400">
+          E-mail:
+        </label>
+        <input
+          type="email"
+          id="email"
+          {...register("email")}
+          required
+          className="w-full p-3 text-sm rounded-lg border border-red-500 bg-gray-700 text-white
+                     focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600"
+        />
       </div>
 
-      <Toaster richColors position="top-right" />
-    </main>
+      <div>
+        <label htmlFor="password" className="block mb-2 text-sm font-medium text-red-400">
+          Senha:
+        </label>
+        <input
+          type="password"
+          id="password"
+          {...register("senha")}
+          required
+          className="w-full p-3 text-sm rounded-lg border border-red-500 bg-gray-700 text-white
+                     focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600"
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full py-3 text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none
+                   focus:ring-red-300 font-semibold rounded-lg shadow-md transition-all duration-200"
+      >
+        Entrar
+      </button>
+    </form>
+  </div>
+
+  <Toaster richColors position="top-right" />
+</main>
+
   )
 }

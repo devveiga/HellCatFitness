@@ -1,169 +1,123 @@
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { useState, useEffect } from "react"
-import type { MarcaType } from "../utils/MarcaType"
+import { useEffect } from "react"
 import { useAdminStore } from "./context/AdminContext"
 
 const apiUrl = import.meta.env.VITE_API_URL
 
 type Inputs = {
-  modelo: string
-  marcaId: number
-  ano: number
-  km: number
-  preco: number
-  foto: string
-  acessorios: string
-  combustivel: string
-  adminId: string  
+  descricao: string
+  dataInicio: string
+  ativo: boolean
 }
 
-export default function AdminNovoCarro() {
-  const [marcas, setMarcas] = useState<MarcaType[]>([])
+export default function AdminNovoTreino() {
   const { admin } = useAdminStore()
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setFocus
-  } = useForm<Inputs>()
+  const { register, handleSubmit, reset, setFocus } = useForm<Inputs>()
 
   useEffect(() => {
-    async function getMarcas() {
-      const response = await fetch(`${apiUrl}/marcas`)
-      const dados = await response.json()
-      setMarcas(dados)
-    }
-    getMarcas()
-    setFocus("modelo")
+    setFocus("descricao")
   }, [])
 
-  const optionsMarca = marcas.map(marca => (
-    <option key={marca.id} value={marca.id}>{marca.nome}</option>
-  ))
+  async function incluirTreino(data: Inputs) {
+    try {
+      const novoTreino = {
+        descricao: data.descricao,
+        dataInicio: new Date(data.dataInicio).toISOString(), // ✅ envia como string ISO
+        ativo: data.ativo,
+        adminId: admin.id,
+      }
 
-  async function incluirCarro(data: Inputs) {
-
-    const novoCarro: Inputs = {
-      modelo: data.modelo,
-      marcaId: Number(data.marcaId),
-      ano: Number(data.ano),
-      km: Number(data.km),
-      acessorios: data.acessorios,
-      foto: data.foto,
-      preco: Number(data.preco),
-      combustivel: data.combustivel,
-      adminId: admin.id
-    }
-
-    const response = await fetch(`${apiUrl}/carros`,
-      {
+      const response = await fetch(`${apiUrl}/treinos`, {
         method: "POST",
         headers: {
-          "Content-type": "application/json",
-            Authorization: `Bearer ${admin.token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${admin.token}`,
         },
-        body: JSON.stringify(novoCarro)
-      },
-    )
+        body: JSON.stringify(novoTreino),
+      })
 
-    if (response.status == 201) {
-      toast.success("Ok! Carro cadastrado com sucesso")
-      reset()
-    } else {
-      toast.error("Erro no cadastro do Carro...")
+      if (response.status === 201) {
+        toast.success("Treino cadastrado com sucesso!")
+        reset()
+      } else {
+        const errorText = await response.text()
+        toast.error("Erro no cadastro do Treino: " + errorText)
+      }
+    } catch (error: any) {
+      toast.error("Erro de rede ou servidor: " + error.message)
     }
   }
 
   return (
-    <>
-      <h1 className="mb-4 mt-24 text-2xl font-bold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl dark:text-white me-56">
-        Inclusão de Carros
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      <h1 className="mb-8 mt-16 text-3xl font-bold text-red-600 text-center">
+        Inclusão de Treino
       </h1>
 
-      <form className="max-w-xl mx-auto" onSubmit={handleSubmit(incluirCarro)}>
-        <div className="mb-3">
-          <label htmlFor="modelo" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Modelo do Carro</label>
-          <input type="text" id="modelo"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required
-            {...register("modelo")}
+      <form
+        className="max-w-xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg space-y-6"
+        onSubmit={handleSubmit(incluirTreino)}
+      >
+        {/* Descrição */}
+        <div>
+          <label
+            htmlFor="descricao"
+            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+          >
+            Descrição
+          </label>
+          <input
+            type="text"
+            id="descricao"
+            {...register("descricao")}
+            required
+            className="w-full p-3 text-sm rounded-lg border border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
         </div>
-        <div className="grid gap-6 mb-3 md:grid-cols-2">
-          <div className="mb-3">
-            <label htmlFor="marcaId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Marca</label>
-            <select id="marcaId"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required
-              {...register("marcaId")}
-            >
-              {optionsMarca}
-            </select>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="ano" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Ano</label>
-            <input type="number" id="ano"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required
-              {...register("ano")}
-            />
-          </div>
-        </div>
-        <div className="grid gap-6 mb-3 md:grid-cols-2">
-          <div className="mb-3">
-            <label htmlFor="preco" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Preço R$</label>
-            <input type="number" id="preco"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required
-              {...register("preco")}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="km" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Km</label>
-            <input type="number" id="km"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required
-              {...register("km")}
-            />
-          </div>
-        </div>
-        <div className="grid gap-6 mb-3 md:grid-cols-2">
-          <div className="mb-3">
-            <label htmlFor="foto" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              URL da Foto</label>
-            <input type="text" id="foto"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required
-              {...register("foto")}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="combustivel" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Combustível</label>
-            <select id="combustivel"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required
-              {...register("combustivel")}
-            >
-              <option>FLEX</option>
-              <option>GASOLINA</option>
-              <option>ALCOOL</option>
-              <option>DIESEL</option>
-              <option>ELETRICIDADE</option>
-            </select>
-          </div>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="sinopse" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Acessórios</label>
-          <textarea id="acessorios" rows={4}
-            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            {...register("acessorios")}></textarea>
+
+        {/* Data de Início */}
+        <div>
+          <label
+            htmlFor="dataInicio"
+            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+          >
+            Data de Início
+          </label>
+          <input
+            type="date"
+            id="dataInicio"
+            {...register("dataInicio")}
+            required
+            className="w-full p-3 text-sm rounded-lg border border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
         </div>
 
-        <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-          Incluir</button>
+        {/* Ativo */}
+        <div className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="ativo"
+            {...register("ativo")}
+            defaultChecked
+            className="w-5 h-5 text-red-600 rounded focus:ring-red-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+          />
+          <label
+            htmlFor="ativo"
+            className="text-gray-700 dark:text-gray-200 font-medium"
+          >
+            Ativo
+          </label>
+        </div>
+
+        {/* Botão */}
+        <button
+          type="submit"
+          className="w-full py-3 text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-semibold rounded-lg shadow-md transition-all duration-200"
+        >
+          Incluir Treino
+        </button>
       </form>
-    </>
+    </div>
   )
 }

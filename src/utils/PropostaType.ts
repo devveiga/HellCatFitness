@@ -9,4 +9,10 @@ export type PropostaType = {
   resposta: string | null
   createdAt: string
   updatedAt: string | null
+  exercicios: number
+  usuario: {
+    id: string
+    nome: string
+    email: string
+  } | null
 }

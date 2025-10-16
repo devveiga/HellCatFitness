@@ -1,5 +1,5 @@
 import { TiDeleteOutline } from "react-icons/ti"
-import { FaRegEdit  } from "react-icons/fa"
+import { FaRegEdit } from "react-icons/fa"
 import type { PropostaType } from "../../utils/PropostaType"
 import { useAdminStore } from "../context/AdminContext"
 
@@ -12,25 +12,20 @@ type listaPropostaProps = {
 const apiUrl = import.meta.env.VITE_API_URL
 
 export default function ItemProposta({ proposta, propostas, setPropostas }: listaPropostaProps) {
-
   const { admin } = useAdminStore()
 
   async function excluirProposta() {
-
     if (confirm(`Confirma Exclusão da Proposta "${proposta.descricao}"?`)) {
-      const response = await fetch(`${apiUrl}/propostas/${proposta.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${admin.token}`
-          },
+      const response = await fetch(`${apiUrl}/propostas/${proposta.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${admin.token}`
         },
-      )
+      })
 
       if (response.status == 200) {
-        const propostas2 = propostas.filter(x => x.id != proposta.id)
-        setPropostas(propostas2)
+        setPropostas(propostas.filter(x => x.id !== proposta.id))
         alert("Proposta excluída com sucesso")
       } else {
         alert("Erro... Proposta não foi excluída")
@@ -40,68 +35,48 @@ export default function ItemProposta({ proposta, propostas, setPropostas }: list
 
   async function responderProposta() {
     const respostaRevenda = prompt(`Resposta da Revenda para "${proposta.descricao}"`)
+    if (!respostaRevenda?.trim()) return
 
-    if (respostaRevenda == null || respostaRevenda.trim() == "") {
-      return
-    }
-
-    const response = await fetch(`${apiUrl}/propostas/${proposta.id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${admin.token}`
-        },
-        body: JSON.stringify({resposta: respostaRevenda})
+    const response = await fetch(`${apiUrl}/propostas/${proposta.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${admin.token}`
       },
-    )
+      body: JSON.stringify({ resposta: respostaRevenda })
+    })
 
     if (response.status == 200) {
-      const propostas2 = propostas.map(x => {
-        if (x.id == proposta.id) {
-          return { ...x, resposta: respostaRevenda}
-        }
-        return x
-      })
-      setPropostas(propostas2)
+      setPropostas(propostas.map(x => x.id === proposta.id ? { ...x, resposta: respostaRevenda } : x))
     }
   }
 
   return (
-    <tr key={proposta.id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-       
-      </th>
-      <td className={"px-6 py-4"}>
-        {proposta.treino.descricao}
+    <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+      <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+        {proposta.treino?.descricao ?? "-"}
       </td>
-      <td className={"px-6 py-4"}>
-        {Number(proposta.treino.exercicios).toLocaleString("pt-br", {minimumFractionDigits: 2})}
-      </td>
-      <td className={`px-6 py-4`}>
-        {proposta.clienteId}
-      </td>
-      <td className={`px-6 py-4`}>
-        {proposta.descricao}
-      </td>
-      <td className={`px-6 py-4`}>
-        {proposta.resposta}
-      </td>
+      <td className="px-6 py-4">{proposta.usuario?.nome ?? "-"}</td>
+      <td className="px-6 py-4">{proposta.descricao}</td>
+      <td className="px-6 py-4">{proposta.resposta ?? "-"}</td>
       <td className="px-6 py-4">
-        {proposta.resposta ? 
+        {proposta.resposta ? (
+          <img src="/ok.png" alt="Ok" style={{ width: 60 }} />
+        ) : (
           <>
-            <img src="/ok.png" alt="Ok" style={{width: 60}} />
+            <TiDeleteOutline
+              className="text-3xl text-red-600 inline-block cursor-pointer"
+              title="Excluir"
+              onClick={excluirProposta}
+            />&nbsp;
+            <FaRegEdit
+              className="text-3xl text-yellow-600 inline-block cursor-pointer"
+              title="Responder"
+              onClick={responderProposta}
+            />
           </>
-        :
-          <>
-            <TiDeleteOutline className="text-3xl text-red-600 inline-block cursor-pointer" title="Excluir"
-              onClick={excluirProposta} />&nbsp;
-            <FaRegEdit className="text-3xl text-yellow-600 inline-block cursor-pointer" title="Destacar"
-              onClick={responderProposta} />
-          </>
-        }
+        )}
       </td>
-
     </tr>
   )
 }
