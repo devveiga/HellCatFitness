@@ -25,7 +25,9 @@ const treino = z.object({
 
 router.get("/", async (req, res) => {
   try {
-    const treinos = await prisma.treino.findMany()
+    const treinos = await prisma.treino.findMany({
+      where: { ativo: true },
+    })
     res.status(200).json(treinos)
   } catch (error) {
     res.status(500).json({ erro: error })
@@ -80,29 +82,33 @@ router.post("/", async (req, res) => {
     }
   });
   
-  router.delete("/:id", async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      await prisma.$transaction(async (tx) => {
-        await tx.treinoExercicio.deleteMany({
-          where: {
-            treinoId: Number(id),
-          },
-        });
-  
-        await tx.treino.delete({
-          where: {
-            id: Number(id),
-          },
-        });
-      });
-  
-      res.status(200).json({ message: `Treino ${id} apagado com sucesso.` });
-    } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const treinoExistente = await prisma.treino.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!treinoExistente) {
+      return res.status(404).json({ error: "Treino não encontrado." });
     }
-  });
+
+    if (!treinoExistente.ativo) {
+      return res.status(400).json({ error: "Treino já está inativo." });
+    }
+
+    await prisma.treino.update({
+      where: { id: Number(id) },
+      data: { ativo: false },
+    });
+
+    res.status(200).json({ message: `Treino ${id} desativado com sucesso.` });
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+  }
+});
+
   
   router.put("/:id", async (req, res) => {
     const { id } = req.params;
