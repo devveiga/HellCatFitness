@@ -2,6 +2,7 @@ import { TiDeleteOutline } from "react-icons/ti"
 import { FaRegEdit } from "react-icons/fa"
 import type { PropostaType } from "../../utils/PropostaType"
 import { useAdminStore } from "../context/AdminContext"
+import logo from "../assets/ok.png";
 
 type listaPropostaProps = {
   proposta: PropostaType,
@@ -16,7 +17,7 @@ export default function ItemProposta({ proposta, propostas, setPropostas }: list
 
   async function excluirProposta() {
     if (confirm(`Confirma Exclusão da Proposta "${proposta.descricao}"?`)) {
-      const response = await fetch(`${apiUrl}/propostas/${proposta.id}`, {
+      const response = await fetch(`${apiUrl}/proposta/${proposta.id}`, {
         method: "DELETE",
         headers: {
           "Content-type": "application/json",
@@ -37,7 +38,7 @@ export default function ItemProposta({ proposta, propostas, setPropostas }: list
     const respostaRevenda = prompt(`Resposta da Revenda para "${proposta.descricao}"`)
     if (!respostaRevenda?.trim()) return
 
-    const response = await fetch(`${apiUrl}/propostas/${proposta.id}`, {
+    const response = await fetch(`${apiUrl}/proposta/${proposta.id}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -61,7 +62,7 @@ export default function ItemProposta({ proposta, propostas, setPropostas }: list
       <td className="px-6 py-4">{proposta.resposta ?? "-"}</td>
       <td className="px-6 py-4">
         {proposta.resposta ? (
-          <img src="/ok.png" alt="Ok" style={{ width: 60 }} />
+          <img src={logo}  alt="Ok" style={{ width: 25 }} /> 
         ) : (
           <>
             <TiDeleteOutline
