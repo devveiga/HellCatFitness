@@ -1,5 +1,6 @@
 import express from 'express'
-import routesAlunos from './routes/alunos'
+import cors from 'cors'
+import routesProposta from './routes/proposta'
 import routesInstrutores from './routes/instrutores'
 import routesExercicios from './routes/exercicios'
 import routesTreinos from './routes/treinos'
@@ -7,6 +8,9 @@ import routesTreinoexercicios from './routes/treinoexercicios'
 import routesUsuarios from './routes/usuarios'
 import routesLogin from './routes/login'
 import routesSeguranca from './routes/seguranca'
+import routesAdmins from './routes/admins'
+import routesAdminLogin from './routes/adminLogin'
+import routesDashboard from './routes/dashboard'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -14,9 +18,10 @@ dotenv.config()
 const app = express()
 const port = 3000
 
+
+app.use(cors())
 app.use(express.json())
 
-app.use("/alunos", routesAlunos)
 app.use("/instrutores", routesInstrutores)
 app.use("/exercicios", routesExercicios)
 app.use("/treinos", routesTreinos)
@@ -24,8 +29,10 @@ app.use("/treinoexercicios", routesTreinoexercicios)
 app.use("/usuarios", routesUsuarios)
 app.use("/login", routesLogin)
 app.use("/seguranca", routesSeguranca)
-
-app.use
+app.use("/proposta", routesProposta)
+app.use("/admins/login", routesAdminLogin)
+app.use("/admins", routesAdmins)  
+app.use("/dashboard", routesDashboard)
 
 app.get('/', (req, res) => {
   res.send('API: Controle treinos de academia')
