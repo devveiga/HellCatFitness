@@ -15,17 +15,19 @@ model Instrutor {
 }
 
 model Treino {
-  id            Int             @id @default(autoincrement())
+  id            Int              @id @default(autoincrement())
   descricao     String
   dataInicio    DateTime
-  ativo         Boolean         @default(true)
+  ativo         Boolean          @default(true)
+  imagemUrl     String?      
   exercicios    TreinoExercicio[]
   propostas     Proposta[]
-  admin          Admin?       @relation(fields: [adminId], references: [id])
-  adminId        String?      @db.VarChar(36) 
-  usuario       Usuario?        @relation(fields: [usuarioId], references: [id])
-  usuarioId     String?        @db.VarChar(36)
+  admin         Admin?           @relation(fields: [adminId], references: [id])
+  adminId       String?          @db.VarChar(36) 
+  usuario       Usuario?         @relation(fields: [usuarioId], references: [id])
+  usuarioId     String?          @db.VarChar(36)
 }
+
 
 
 model Exercicio {

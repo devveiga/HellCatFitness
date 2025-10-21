@@ -11,6 +11,7 @@ const treino = z.object({
   descricao: z.string().min(5, "A descrição do treino deve ter pelo menos 5 caracteres"),
   dataInicio: z.string().datetime({ message: "A data de início deve ser uma data válida" }),
   ativo: z.boolean().default(true),
+  imagemUrl: z.string().url({ message: "A URL da imagem deve ser válida" }).optional(), // 👈 novo campo
   usuarioId: z.string().uuid({ message: "O ID do usuário deve ser um UUID válido" }).optional(),
   exercicios: z
     .array(
@@ -21,7 +22,8 @@ const treino = z.object({
       })
     )
     .optional(),
-})
+});
+
 
 router.get("/", async (req, res) => {
   try {
@@ -35,52 +37,39 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
-    const valida = treino.safeParse(req.body);
-    if (!valida.success) {
-      res.status(400).json({ erro: valida.error });
-      return;
-    }
-  
-  const { descricao, dataInicio, ativo, usuarioId, exercicios } = valida.data;
-  
-    try {
-      const novoTreino = await prisma.$transaction(async (tx) => {
-      
-        const treinoCriado = await tx.treino.create({
-          data: {
-            descricao,
-            dataInicio,
-            ativo,
-            usuarioId
-          }
-        });
-  
-    
-        if (exercicios && exercicios.length > 0) {
-          await tx.treinoExercicio.createMany({
-            data: exercicios.map((ex) => ({
-              treinoId: treinoCriado.id,
-              exercicioId: ex.exercicioId,
-              series: ex.series,
-              repeticoes: ex.repeticoes
-            }))
-          });
-        }
-  
-        return treinoCriado;
-      });
-  
-      res.status(201).json(novoTreino);
-    } catch (error) {
+  const valida = treino.safeParse(req.body);
+  if (!valida.success) {
+    return res.status(400).json({ erro: valida.error });
+  }
 
-        if (error instanceof Error) {
-            res.status(400).json({ error: error.message });
-          } else {
-            res.status(400).json({ error: String(error) });
-          }
-          
-    }
-  });
+  const { descricao, dataInicio, ativo, usuarioId, exercicios, imagemUrl } = valida.data; // 👈
+
+  try {
+    const novoTreino = await prisma.$transaction(async (tx) => {
+      const treinoCriado = await tx.treino.create({
+        data: { descricao, dataInicio, ativo, usuarioId, imagemUrl }, // 👈
+      });
+
+      if (exercicios && exercicios.length > 0) {
+        await tx.treinoExercicio.createMany({
+          data: exercicios.map((ex) => ({
+            treinoId: treinoCriado.id,
+            exercicioId: ex.exercicioId,
+            series: ex.series,
+            repeticoes: ex.repeticoes,
+          })),
+        });
+      }
+
+      return treinoCriado;
+    });
+
+    res.status(201).json(novoTreino);
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+  }
+});
+
   
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
@@ -111,46 +100,44 @@ router.delete("/:id", async (req, res) => {
 
   
   router.put("/:id", async (req, res) => {
-    const { id } = req.params;
-    const valida = treino.safeParse(req.body);
-  
-    if (!valida.success) {
-      return res.status(400).json({ erro: valida.error });
-    }
-  
-  const { descricao, dataInicio, ativo, usuarioId, exercicios } = valida.data;
-  
-    try {
-      const treinoAtualizado = await prisma.$transaction(async (tx) => {
-        
-        const atualizado = await tx.treino.update({
-          where: { id: Number(id) },
-          data: { descricao, dataInicio, ativo, usuarioId },
-        });
-  
-       
-        await tx.treinoExercicio.deleteMany({ where: { treinoId: atualizado.id } });
-  
-     
-        if (exercicios && exercicios.length > 0) {
-          await tx.treinoExercicio.createMany({
-            data: exercicios.map((ex) => ({
-              treinoId: atualizado.id,
-              exercicioId: ex.exercicioId,
-              series: ex.series,
-              repeticoes: ex.repeticoes,
-            })),
-          });
-        }
-  
-        return atualizado;
+  const { id } = req.params;
+  const valida = treino.safeParse(req.body);
+
+  if (!valida.success) {
+    return res.status(400).json({ erro: valida.error });
+  }
+
+  const { descricao, dataInicio, ativo, usuarioId, exercicios, imagemUrl } = valida.data; // 👈
+
+  try {
+    const treinoAtualizado = await prisma.$transaction(async (tx) => {
+      const atualizado = await tx.treino.update({
+        where: { id: Number(id) },
+        data: { descricao, dataInicio, ativo, usuarioId, imagemUrl }, // 👈
       });
-  
-      res.status(200).json(treinoAtualizado);
-    } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
-    }
-  });
+
+      await tx.treinoExercicio.deleteMany({ where: { treinoId: atualizado.id } });
+
+      if (exercicios && exercicios.length > 0) {
+        await tx.treinoExercicio.createMany({
+          data: exercicios.map((ex) => ({
+            treinoId: atualizado.id,
+            exercicioId: ex.exercicioId,
+            series: ex.series,
+            repeticoes: ex.repeticoes,
+          })),
+        });
+      }
+
+      return atualizado;
+    });
+
+    res.status(200).json(treinoAtualizado);
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+  }
+});
+
   
 
 
