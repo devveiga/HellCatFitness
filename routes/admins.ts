@@ -79,38 +79,45 @@ function validaSenha(senha: string) {
   return mensa
 }
 
-router.post("/",  async (req, res) => {
-
+router.post("/", async (req, res) => {
+  // 1️⃣ Validação do schema básico com Zod
   const valida = adminSchema.safeParse(req.body)
   if (!valida.success) {
-    res.status(400).json({ erro: valida.error })
-    return
+    return res.status(400).json({ erro: valida.error })
   }
 
-  const erros = validaSenha(valida.data.senha)
+  const { nome, email, senha, nivel } = valida.data
+
+  // 2️⃣ Validação da senha
+  const erros = validaSenha(senha)
   if (erros.length > 0) {
-    res.status(400).json({ erro: erros.join("; ") })
-    return
+    return res.status(400).json({ erro: erros.join("; ") })
   }
 
-  // 12 é o número de voltas (repetições) que o algoritmo faz
-  // para gerar o salt (sal/tempero)
-  const salt = bcrypt.genSaltSync(12)
-  // gera o hash da senha acrescida do salt
-  const hash = bcrypt.hashSync(valida.data.senha, salt)
-
-  const { nome, email, nivel } = valida.data
-
-  // para o campo senha, atribui o hash gerado
   try {
+    // 3️⃣ Verificar se já existe um admin com o mesmo email
+    const existente = await prisma.admin.findUnique({
+      where: { email }
+    })
+    if (existente) {
+      return res.status(400).json({ erro: "Já existe um admin com esse email" })
+    }
+
+    // 4️⃣ Hash da senha
+    const salt = bcrypt.genSaltSync(12)
+    const hash = bcrypt.hashSync(senha, salt)
+
+    // 5️⃣ Criar admin
     const admin = await prisma.admin.create({
       data: { nome, email, senha: hash, nivel }
     })
+
     res.status(201).json(admin)
   } catch (error) {
     res.status(400).json(error)
   }
 })
+
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params
@@ -123,5 +130,41 @@ router.get("/:id", async (req, res) => {
     res.status(400).json(error)
   }
 })
+// PATCH /admins/:id - altera o nível de um admin
+router.patch("/:id", async (req, res) => {
+  const { id } = req.params
+  const { nivel } = req.body
+
+  // validação do nível
+  if (typeof nivel !== "number" || nivel < 1 || nivel > 5) {
+    return res.status(400).json({ erro: "Nível inválido. Deve ser entre 1 e 5." })
+  }
+
+  try {
+    // atualiza o admin pelo id
+    const adminAtualizado = await prisma.admin.update({
+      where: { id },
+      data: { nivel },
+    })
+
+    res.status(200).json(adminAtualizado)
+  } catch (error) {
+    res.status(404).json({ erro: "Admin não encontrado" })
+  }
+})
+// DELETE /admins/:id
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const admin = await prisma.admin.delete({
+      where: { id },
+    });
+    res.status(200).json({ mensagem: "Admin excluído com sucesso", admin });
+  } catch (error) {
+    res.status(404).json({ erro: "Admin não encontrado" });
+  }
+});
+
 
 export default router
