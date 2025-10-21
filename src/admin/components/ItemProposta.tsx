@@ -15,17 +15,21 @@ const apiUrl = import.meta.env.VITE_API_URL
 export default function ItemProposta({ proposta, propostas, setPropostas }: listaPropostaProps) {
   const { admin } = useAdminStore()
 
+  // Se admin ainda não existir, nem renderiza o componente
+  if (!admin) return null;
+
   async function excluirProposta() {
     if (confirm(`Confirma Exclusão da Proposta "${proposta.descricao}"?`)) {
+      // Aqui podemos usar admin com certeza de que não é null
       const response = await fetch(`${apiUrl}/proposta/${proposta.id}`, {
         method: "DELETE",
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${admin.token}`
+          Authorization: `Bearer ${admin!.token}` // <--- ! garante que não é null
         },
       })
 
-      if (response.status == 200) {
+      if (response.status === 200) {
         setPropostas(propostas.filter(x => x.id !== proposta.id))
         alert("Proposta excluída com sucesso")
       } else {
@@ -42,12 +46,12 @@ export default function ItemProposta({ proposta, propostas, setPropostas }: list
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${admin.token}`
+        Authorization: `Bearer ${admin!.token}` // <--- ! garante que não é null
       },
       body: JSON.stringify({ resposta: respostaRevenda })
     })
 
-    if (response.status == 200) {
+    if (response.status === 200) {
       setPropostas(propostas.map(x => x.id === proposta.id ? { ...x, resposta: respostaRevenda } : x))
     }
   }
@@ -62,7 +66,7 @@ export default function ItemProposta({ proposta, propostas, setPropostas }: list
       <td className="px-6 py-4">{proposta.resposta ?? "-"}</td>
       <td className="px-6 py-4">
         {proposta.resposta ? (
-          <img src={logo}  alt="Ok" style={{ width: 25 }} /> 
+          <img src={logo} alt="Ok" style={{ width: 25 }} />
         ) : (
           <>
             <TiDeleteOutline

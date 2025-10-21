@@ -29,17 +29,18 @@ export default function AdminLogin() {
       })
 
       if (response.ok) {
-        const dataRes = await response.json()
-        console.log("🔐 Login bem-sucedido:", dataRes)
+  const dataRes = await response.json()
+  console.log("🔐 Login bem-sucedido:", dataRes)
 
-        // salva apenas o admin (sem token)
-        logaAdmin(dataRes.usuario)
+  // salva admin com token no Zustand
+  logaAdmin({
+    ...dataRes.usuario, // id, nome, email, nivel
+    token: dataRes.token // adiciona o token
+  })
 
-        // opcional: salva o token localmente
-        localStorage.setItem("token", dataRes.token)
-
-        navigate("/admin", { replace: true })
-      } else if (response.status === 400) {
+  navigate("/admin", { replace: true })
+}
+ else if (response.status === 400) {
         toast.error("Erro... Login ou senha incorretos")
       } else {
         toast.error("Erro inesperado no login")

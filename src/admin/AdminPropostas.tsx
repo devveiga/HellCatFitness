@@ -8,35 +8,45 @@ const apiUrl = import.meta.env.VITE_API_URL
 function ControlePropostas() {
   const [propostas, setPropostas] = useState<PropostaType[]>([])
   const { admin } = useAdminStore()
-  console.log("Renderizando ControlePropostas - admin:", admin)
 
-  async function getPropostas() {
-    console.log("🔄 useEffect iniciado - admin:", admin)
+  async function getPropostas(adminToken: string) {
     try {
       const response = await fetch(`${apiUrl}/proposta`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${admin.token}`,
+          Authorization: `Bearer ${adminToken}`,
         },
-      });
-      const dados: PropostaType[] = await response.json();
-      setPropostas(dados);
+      })
+
+      if (!response.ok) {
+        throw new Error("Erro ao buscar propostas")
+      }
+
+      const dados: PropostaType[] = await response.json()
+      setPropostas(dados)
       console.log("✅ Propostas carregadas:", dados)
     } catch (err) {
       console.error("❌ Erro ao buscar propostas:", err)
     }
   }
- useEffect(() => {
-  console.log("useEffect chamado");
-  if (!admin) return;
-  console.log("propostas antes", propostas);
-  getPropostas();
-  console.log("propostas dps", propostas);
-}, [admin]);
+
+  useEffect(() => {
+    if (!admin) {
+      console.log("Aguardando admin ser restaurado do Zustand...")
+      return
+    }
+
+    if (!admin.token) {
+      console.error("Admin sem token! Verifique o login")
+      return
+    }
+
+    getPropostas(admin.token)
+  }, [admin])
 
   return (
     <div className="m-4 mt-24">
-      <h1 className="mb-4 text-2xl font-bold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl dark:text-red-800">
+      <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-red-800">
         Controle de Propostas
       </h1>
 

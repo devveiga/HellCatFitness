@@ -19,35 +19,41 @@ export default function AdminNovoTreino() {
     setFocus("descricao")
   }, [])
 
-  async function incluirTreino(data: Inputs) {
-    try {
-      const novoTreino = {
-        descricao: data.descricao,
-        dataInicio: new Date(data.dataInicio).toISOString(), // ✅ envia como string ISO
-        ativo: data.ativo,
-        adminId: admin.id,
-      }
-
-      const response = await fetch(`${apiUrl}/treinos`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${admin.token}`,
-        },
-        body: JSON.stringify(novoTreino),
-      })
-
-      if (response.status === 201) {
-        toast.success("Treino cadastrado com sucesso!")
-        reset()
-      } else {
-        const errorText = await response.text()
-        toast.error("Erro no cadastro do Treino: " + errorText)
-      }
-    } catch (error: any) {
-      toast.error("Erro de rede ou servidor: " + error.message)
-    }
+ async function incluirTreino(data: Inputs) {
+  if (!admin) {
+    toast.error("Admin não encontrado. Faça login novamente.")
+    return
   }
+
+  try {
+    const novoTreino = {
+      descricao: data.descricao,
+      dataInicio: new Date(data.dataInicio).toISOString(),
+      ativo: data.ativo,
+      adminId: admin!.id, // ✅ força não-null
+    }
+
+    const response = await fetch(`${apiUrl}/treinos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${admin!.token}`, // ✅ força não-null
+      },
+      body: JSON.stringify(novoTreino),
+    })
+
+    if (response.status === 201) {
+      toast.success("Treino cadastrado com sucesso!")
+      reset()
+    } else {
+      const errorText = await response.text()
+      toast.error("Erro no cadastro do Treino: " + errorText)
+    }
+  } catch (error: any) {
+    toast.error("Erro de rede ou servidor: " + error.message)
+  }
+}
+
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">

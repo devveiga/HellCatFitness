@@ -14,35 +14,15 @@ const apiUrl = import.meta.env.VITE_API_URL
 export default function ItemTreino({ treino, treinos, setTreinos }: ListaTreinosProps) {
   const { admin } = useAdminStore()
 
-  async function excluirTreino() {
-    if (!admin || admin.nivel == 1) {
-      alert("Você não tem permissão para excluir treinos");
-      return;
-    }
-
-    if (confirm(`Confirma a exclusão do treino "${treino.descricao}"?`)) {
-      const response = await fetch(`${apiUrl}/treinos/${treino.id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${admin.token}`,
-        },
-      });
-
-      if (response.status === 200) {
-        const treinosAtualizados = treinos.filter(x => x.id !== treino.id);
-        setTreinos(treinosAtualizados);
-        alert("Treino excluído com sucesso!");
-      } else {
-        alert("Erro... o treino não foi excluído.");
-      }
-    }
+async function excluirTreino() {
+  if (!admin || admin.nivel == 1) {
+    alert("Você não tem permissão para desativar treinos");
+    return;
   }
 
-  async function alterarDestaque() {
-    // se tu quiser adicionar destaque ao treino depois, aqui já fica preparado
-    const response = await fetch(`${apiUrl}/treinos/destacar/${treino.id}`, {
-      method: "PATCH",
+  if (confirm(`Confirma a desativação do treino "${treino.descricao}"?`)) {
+    const response = await fetch(`${apiUrl}/treinos/${treino.id}`, {
+      method: "DELETE",
       headers: {
         "Content-type": "application/json",
         Authorization: `Bearer ${admin.token}`,
@@ -50,12 +30,39 @@ export default function ItemTreino({ treino, treinos, setTreinos }: ListaTreinos
     });
 
     if (response.status === 200) {
-      const treinosAtualizados = treinos.map(x =>
-        x.id === treino.id ? { ...x, destaque: !x.destaque } : x
-      );
+      const treinosAtualizados = treinos.filter(x => x.id !== treino.id);
       setTreinos(treinosAtualizados);
+      alert("Treino desativado com sucesso!");
+    } else {
+      const erro = await response.json();
+      alert(`Erro... o treino não foi desativado. (${erro.error ?? 'Erro desconhecido'})`);
     }
   }
+}
+
+
+  async function alterarDestaque() {
+  if (!admin) {
+    alert("Admin não encontrado. Recarregue a página.");
+    return;
+  }
+
+  const response = await fetch(`${apiUrl}/treinos/destacar/${treino.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${admin.token}`,
+    },
+  });
+
+  if (response.status === 200) {
+    const treinosAtualizados = treinos.map(x =>
+      x.id === treino.id ? { ...x, destaque: !x.destaque } : x
+    );
+    setTreinos(treinosAtualizados);
+  }
+}
+
 
   return (
     

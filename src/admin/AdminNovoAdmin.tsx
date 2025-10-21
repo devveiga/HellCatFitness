@@ -12,29 +12,38 @@ export default function AdminNovoAdmin() {
   const [email, setEmail] = useState("");
   const [nivel, setNivel] = useState(1);
   const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState(""); // estado para mensagem de erro
 
   async function criarAdmin(e: React.FormEvent) {
     e.preventDefault();
 
     if (!nome || !email || !senha) {
-      alert("Preencha todos os campos");
+      setErro("Preencha todos os campos");
       return;
     }
 
-    const response = await fetch(`${apiUrl}/admins`, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${admin?.token}`,
-      },
-      body: JSON.stringify({ nome, email, senha, nivel }),
-    });
+    try {
+      const response = await fetch(`${apiUrl}/admins`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${admin?.token}`,
+        },
+        body: JSON.stringify({ nome, email, senha, nivel }),
+      });
 
-    if (response.status === 201) {
-      alert("Admin criado com sucesso!");
-      navigate("/admin/cadAdmin");
-    } else {
-      alert("Erro ao criar admin");
+      const dados = await response.json();
+
+      if (response.status === 201) {
+        alert("Admin criado com sucesso!");
+        navigate("/admin/cadAdmin");
+      } else {
+        // mostra o erro retornado pelo backend ou uma mensagem genérica
+        setErro(dados.erro || "Erro ao criar admin");
+      }
+    } catch (err) {
+      console.error(err);
+      setErro("Erro de conexão com o servidor");
     }
   }
 
@@ -48,12 +57,12 @@ export default function AdminNovoAdmin() {
         onSubmit={criarAdmin}
         className="max-w-xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg space-y-6"
       >
+        {/* Mensagem de erro */}
+        {erro && <p className="text-red-600 mb-2">{erro}</p>}
+
         {/* Nome */}
         <div>
-          <label
-            htmlFor="nome"
-            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-          >
+          <label htmlFor="nome" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
             Nome
           </label>
           <input
@@ -69,10 +78,7 @@ export default function AdminNovoAdmin() {
 
         {/* E-mail */}
         <div>
-          <label
-            htmlFor="email"
-            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-          >
+          <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
             E-mail
           </label>
           <input
@@ -88,10 +94,7 @@ export default function AdminNovoAdmin() {
 
         {/* Senha */}
         <div>
-          <label
-            htmlFor="senha"
-            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-          >
+          <label htmlFor="senha" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
             Senha
           </label>
           <input
@@ -107,10 +110,7 @@ export default function AdminNovoAdmin() {
 
         {/* Nível */}
         <div>
-          <label
-            htmlFor="nivel"
-            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-          >
+          <label htmlFor="nivel" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
             Nível da conta (1-5)
           </label>
           <input
