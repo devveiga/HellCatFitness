@@ -1,59 +1,60 @@
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
-import { useEffect } from "react"
-import { useAdminStore } from "./context/AdminContext"
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useEffect } from "react";
+import { useAdminStore } from "./context/AdminContext";
 
-const apiUrl = import.meta.env.VITE_API_URL
+const apiUrl = import.meta.env.VITE_API_URL;
 
 type Inputs = {
-  descricao: string
-  dataInicio: string
-  ativo: boolean
-}
+  descricao: string;
+  dataInicio: string;
+  ativo: boolean;
+  imagemUrl: string; // 👈 novo campo
+};
 
 export default function AdminNovoTreino() {
-  const { admin } = useAdminStore()
-  const { register, handleSubmit, reset, setFocus } = useForm<Inputs>()
+  const { admin } = useAdminStore();
+  const { register, handleSubmit, reset, setFocus } = useForm<Inputs>();
 
   useEffect(() => {
-    setFocus("descricao")
-  }, [])
+    setFocus("descricao");
+  }, []);
 
- async function incluirTreino(data: Inputs) {
-  if (!admin) {
-    toast.error("Admin não encontrado. Faça login novamente.")
-    return
-  }
-
-  try {
-    const novoTreino = {
-      descricao: data.descricao,
-      dataInicio: new Date(data.dataInicio).toISOString(),
-      ativo: data.ativo,
-      adminId: admin!.id, // ✅ força não-null
+  async function incluirTreino(data: Inputs) {
+    if (!admin) {
+      toast.error("Admin não encontrado. Faça login novamente.");
+      return;
     }
 
-    const response = await fetch(`${apiUrl}/treinos`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${admin!.token}`, // ✅ força não-null
-      },
-      body: JSON.stringify(novoTreino),
-    })
+    try {
+      const novoTreino = {
+        descricao: data.descricao,
+        dataInicio: new Date(data.dataInicio).toISOString(),
+        ativo: data.ativo,
+        imagemUrl: data.imagemUrl, // 👈 novo campo
+        adminId: admin!.id,
+      };
 
-    if (response.status === 201) {
-      toast.success("Treino cadastrado com sucesso!")
-      reset()
-    } else {
-      const errorText = await response.text()
-      toast.error("Erro no cadastro do Treino: " + errorText)
+      const response = await fetch(`${apiUrl}/treinos`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${admin!.token}`,
+        },
+        body: JSON.stringify(novoTreino),
+      });
+
+      if (response.status === 201) {
+        toast.success("Treino cadastrado com sucesso!");
+        reset();
+      } else {
+        const errorText = await response.text();
+        toast.error("Erro no cadastro do Treino: " + errorText);
+      }
+    } catch (error: any) {
+      toast.error("Erro de rede ou servidor: " + error.message);
     }
-  } catch (error: any) {
-    toast.error("Erro de rede ou servidor: " + error.message)
   }
-}
-
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
@@ -99,6 +100,23 @@ export default function AdminNovoTreino() {
           />
         </div>
 
+        {/* URL da Imagem */}
+        <div>
+          <label
+            htmlFor="imagemUrl"
+            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+          >
+            URL da Imagem
+          </label>
+          <input
+            type="url"
+            id="imagemUrl"
+            placeholder="https://exemplo.com/treino.jpg"
+            {...register("imagemUrl")}
+            className="w-full p-3 text-sm rounded-lg border border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
+        </div>
+
         {/* Ativo */}
         <div className="flex items-center gap-3">
           <input
@@ -125,5 +143,5 @@ export default function AdminNovoTreino() {
         </button>
       </form>
     </div>
-  )
+  );
 }

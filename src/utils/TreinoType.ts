@@ -3,6 +3,7 @@ export type TreinoType = {
   descricao: string;
   dataInicio: string;
   ativo: boolean;
+  imagemUrl?: string; // <- nova propriedade opcional
   usuario: {
     id: string;
     nome: string;

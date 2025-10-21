@@ -21,6 +21,7 @@ export function CardTreino({ data }: { data: TreinoType }) {
       toast.error("Você precisa estar logado para enviar uma proposta.");
       return;
     }
+
     setLoading(true);
     const response = await fetch(`${apiUrl}/proposta`, {
       headers: { "Content-Type": "application/json" },
@@ -28,9 +29,10 @@ export function CardTreino({ data }: { data: TreinoType }) {
       body: JSON.stringify({
         usuarioId: usuario.id,
         treinoId: data.id,
-        descricao: form.descricao
-      })
+        descricao: form.descricao,
+      }),
     });
+
     setLoading(false);
     if (response.status === 201) {
       toast.success("Obrigado. Sua proposta foi enviada ao instrutor. Aguarde retorno por e-mail.");
@@ -44,9 +46,18 @@ export function CardTreino({ data }: { data: TreinoType }) {
   return (
     <>
       <div className="bg-white dark:bg-gray-800 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col w-full max-w-sm">
-        <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-t-lg flex items-center justify-center text-gray-400 dark:text-gray-300 text-sm font-semibold">
-          Imagem do treino (em breve)
-        </div>
+        {/* Imagem de capa */}
+        {data.imagemUrl ? (
+          <img
+            src={data.imagemUrl}
+            alt={data.descricao}
+            className="w-full h-48 object-cover rounded-t-lg"
+          />
+        ) : (
+          <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-t-lg flex items-center justify-center text-gray-400 dark:text-gray-300 text-sm font-semibold">
+            Imagem do treino (em breve)
+          </div>
+        )}
 
         <div className="p-4 flex flex-col gap-2">
           <h2 className="font-bold text-lg mb-1 text-gray-900 dark:text-white">{data.descricao}</h2>
@@ -55,7 +66,7 @@ export function CardTreino({ data }: { data: TreinoType }) {
             <span className="font-medium">Grupos Musculares:</span>{" "}
             {data.exercicios && data.exercicios.length > 0
               ? data.exercicios
-                  .map(ex => ex.grupoMuscular)
+                  .map((ex) => ex.grupoMuscular)
                   .filter((v, i, a) => a.indexOf(v) === i)
                   .join(", ")
               : "-"}
@@ -81,28 +92,38 @@ export function CardTreino({ data }: { data: TreinoType }) {
               ✖ Fechar
             </button>
 
-            {/* Espaço para imagem grande */}
-            <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-300 text-sm font-semibold">
-              Imagem principal do treino (em breve)
-            </div>
+            {/* Imagem principal */}
+            {data.imagemUrl ? (
+              <img
+                src={data.imagemUrl}
+                alt={data.descricao}
+                className="w-full h-64 object-cover rounded-lg"
+              />
+            ) : (
+              <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-300 text-sm font-semibold">
+                Imagem principal do treino (em breve)
+              </div>
+            )}
 
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{data.descricao}</h2>
 
-            <div>
-              <b>Data de início:</b> {new Date(data.dataInicio).toLocaleDateString()}<br />
+            <div className="text-white">
+              <b>Data de início:</b> {new Date(data.dataInicio).toLocaleDateString()} <br />
               <b>Status:</b> {data.ativo ? "Ativo" : "Inativo"}
             </div>
 
-            <div>
+            <div className="text-white">
               <b>Exercícios:</b>
               <ul className="list-disc ml-6">
-                {data.exercicios && data.exercicios.length > 0
-                  ? data.exercicios.map((ex, idx) => (
-                      <li key={idx}>
-                        {ex.nome} ({ex.grupoMuscular}) - {ex.series}x{ex.repeticoes}
-                      </li>
-                    ))
-                  : <li>Nenhum exercício cadastrado.</li>}
+                {data.exercicios && data.exercicios.length > 0 ? (
+                  data.exercicios.map((ex, idx) => (
+                    <li key={idx}>
+                      {ex.nome} ({ex.grupoMuscular}) - {ex.series}x{ex.repeticoes}
+                    </li>
+                  ))
+                ) : (
+                  <li>Nenhum exercício cadastrado.</li>
+                )}
               </ul>
             </div>
 
